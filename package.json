@@ -1,0 +1,39 @@
+{
+  "name": "gulp-clientlibify",
+  "version": "0.1.0",
+  "description": "Integrate AEM with a styleguide",
+  "license": "MIT",
+  "repository": "mickleroy/gulp-clientlibify",
+  "author": {
+    "name": "Michael Leroy",
+    "email": "mickjleroy@gmail.com"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "files": [
+    "index.js"
+  ],
+  "keywords": [
+    "gulpplugin"
+  ],
+  "dependencies": {
+    "chalk": "^1.0.0",
+    "gulp-util": "^3.0.0",
+    "object-assign": "^4.0.1",
+    "parents": "^1.0.0",
+    "plur": "^2.1.0",
+    "through2": "^2.0.0"
+  },
+  "devDependencies": {
+    "gulp": "^3.8.7",
+    "mocha": "2.5.3",
+    "path-exists": "^2.0.0",
+    "stream-assert": "^2.0.1",
+    "should": "^5.0.0"
+  },
+  "license": "MIT"
+}
