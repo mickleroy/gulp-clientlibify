@@ -29,11 +29,15 @@
     "through2": "^2.0.0"
   },
   "devDependencies": {
+    "fs-extra": "^0.30.0",
     "gulp": "^3.8.7",
+    "gulp-debug": "^2.1.2",
     "mocha": "2.5.3",
     "path-exists": "^2.0.0",
+    "should": "^5.0.0",
     "stream-assert": "^2.0.1",
-    "should": "^5.0.0"
-  },
-  "license": "MIT"
+    "string-template": "^1.0.0",
+    "tmp": "0.0.28",
+    "underscore": "^1.8.3"
+  }
 }
