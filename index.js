@@ -1,14 +1,25 @@
+/*
+ * gulp-clientlibify
+ * https://github.com/mickleroy/gulp-clientlibify
+ *
+ * Copyright (c) 2016 Michael Leroy
+ * Licensed under the MIT license.
+ */
+
 'use strict';
 
-var path    = require('path');
-var gutil   = require('gulp-util');
-var through = require('through2');
-var assign  = require('object-assign');
-var chalk   = require('chalk');
-var plur    = require('plur');
-var fs      = require('fs-extra');
-var tmp     = require('tmp');
-var _       = require('underscore');
+var path     = require('path');
+var gutil    = require('gulp-util');
+var through  = require('through2');
+var assign   = require('object-assign');
+var chalk    = require('chalk');
+var plur     = require('plur');
+var fs       = require('fs-extra');
+var tmp      = require('tmp');
+var _        = require('underscore');
+var archiver = require('archiver');
+var uri      = require('urijs');
+var request  = require('request');
 
 // grab the location from where the script is running from
 // i.e. ~/projects/myproj/node_modules/gulp-clientlibify/
@@ -27,7 +38,7 @@ var templates = {
 module.exports = function (options) {
 
 	options = assign({
-      dest: 'tmp',
+      dest: 'dist',
       assetsDirs: [],
       installPackage: false,
       categories: ['etc-clientlibify'],
@@ -36,7 +47,7 @@ module.exports = function (options) {
       packageName: 'clientlibify',
       packageVersion: '1.0',
       packageGroup: 'my_packages',
-      packageDescription: 'CRX package installed using the grunt-clientlibify plugin',
+      packageDescription: 'CRX package installed using the gulp-clientlibify plugin',
       deployScheme: 'http',
       deployHost: 'localhost',
       deployPort: '4502',
@@ -47,6 +58,7 @@ module.exports = function (options) {
     // set the main category as the first categories entry
     options.category = options.categories[0];
 
+    // grab an ISO format date
     options.isoDateTime = new Date().toISOString();
 
 	// validate mandatory config
@@ -54,20 +66,18 @@ module.exports = function (options) {
 		throw new gutil.PluginError(PLUGIN_NAME, '`cssDir` and/or `jsDir` must be provided');
     }
 
-    if (options.cssDir && !fs.lstatSync(options.cssDir).isDirectory()) {
+    if(options.cssDir && !fs.lstatSync(options.cssDir).isDirectory()) {
       	throw new gutil.PluginError(PLUGIN_NAME, options.cssDir + ' is not a directory');
     }
 
-    if (options.jsDir && !fs.lstatSync(options.jsDir).isDirectory()) {
+    if(options.jsDir && !fs.lstatSync(options.jsDir).isDirectory()) {
       	throw new gutil.PluginError(PLUGIN_NAME, options.jsDir + ' is not a directory');
     }
 
-	var fileCount = 0;
 	var cssFiles = [];
 	var jsFiles = [];
-	var cssPath = fs.realpathSync(options.cssDir);
-	var jsPath = fs.realpathSync(options.jsDir);
-	var fileUploaded = false;
+	var cssPath = options.cssDir ? fs.realpathSync(options.cssDir) : undefined;
+	var jsPath = options.jsDir ? fs.realpathSync(options.jsDir) : undefined;
 
 	function bufferContents(file, encoding, callback) {
 		if (file.isNull()) {
@@ -81,14 +91,13 @@ module.exports = function (options) {
 			return;
 		}
 
-		if(cssPath && (path.extname(file.relative) == '.css' || path.extname(file.relative) == '.less') && isFileInPath(file, cssPath)) {
+		if(cssPath && (path.extname(file.relative) == '.css' || 
+			path.extname(file.relative) == '.less') && isFileInPath(file, cssPath)) {
 			cssFiles.push(file);
-			fileCount++;
 		}
 
 		if(jsPath && path.extname(file.relative) == '.js' && isFileInPath(file, jsPath)) {
 			jsFiles.push(file);
-			fileCount++;
 		}
 
 		callback(null, file);
@@ -97,7 +106,6 @@ module.exports = function (options) {
 	function endStream(callback) {
 	    // create a system tmp directory to store our tmp files`
 	    var tmpWorkingDir = tmp.dirSync({prefix: 'gulp_clientlibify_', unsafeCleanup: true}).name;
-    	gutil.log('Tmp directory is located at: ', tmpWorkingDir);
 
 		var jcrRootPath = path.join(tmpWorkingDir, '/jcr_root');
 	    var metaInfPath = path.join(tmpWorkingDir, '/META-INF');
@@ -137,26 +145,69 @@ module.exports = function (options) {
 
 	    // create js directory
 	    if(jsFiles.length > 0) {
-	    	gutil.log('Processing JS files');
-	    	generateClientLibrarySection('js', clientlibRootDir, jsFiles);
+	    	gutil.log(PLUGIN_NAME, 'Processing JS files');
+	    	generateClientLibrarySection('js', clientlibFolderLocation, jsFiles);
 	    }
 
 	    // create css directory
 	    if(cssFiles.length > 0) {
-	    	gutil.log('Processing CSS files');
-	    	generateClientLibrarySection('css', clientlibRootDir, cssFiles);
+	    	gutil.log(PLUGIN_NAME, 'Processing CSS files');
+	    	generateClientLibrarySection('css', clientlibFolderLocation, cssFiles);
 	    }
 
-		//------------------------------
-		if (fileUploaded) {
-			gutil.log(PLUGIN_NAME, gutil.colors.green('CRX Package uploaded successfully'));
-		} else {
-			gutil.log(PLUGIN_NAME, gutil.colors.yellow('No files uploaded'));
-		}
+	    var that = this;
 
-		//TODO: pass zip file through
-		// this.push(zipFile);
-		callback();
+        // transfer other assets (images, fonts, etc)
+	    if(options.assetsDirs.length) {
+	      	gutil.log(PLUGIN_NAME, 'Processing Assets directories');
+
+	      	options.assetsDirs.forEach(function (assetsSrc) {
+	        	var assetsDest = path.basename(assetsSrc);
+	        	gutil.log(PLUGIN_NAME, 'Processing assets in: ' + assetsSrc);
+
+		        // check provided asset directory
+		        if (!fs.lstatSync(assetsSrc).isDirectory()) {
+	          		gutil.log(PLUGIN_NAME, gutil.colors.yellow(assetsSrc + ' is not a directory, skipping...'));
+		          	return;
+		        }
+
+		        // copy files over to client library
+		        fs.copySync(assetsSrc, path.join(clientlibFolderLocation, assetsDest));
+	      	});
+	    }
+
+	    // zip up the clientlib
+	    var directoriesToZip = [
+	      {src: jcrRootPath, dest: '/jcr_root'},
+	      {src: metaInfPath, dest: '/META-INF'}
+	    ];
+
+	    var zipFileLocation = path.join(options.dest, options.packageName + '-' + options.packageVersion + '.zip');
+
+	    gutil.log(PLUGIN_NAME, 'Creating CRX package');
+
+	    zipDirectory(directoriesToZip, zipFileLocation, function() {
+			// only install the CRX package if the `installPackage` option
+	      	// was set to `true`
+    	  	if(options.installPackage) {
+		        installPackage(zipFileLocation, function(err, httpResponse, body) {
+	          		if(typeof httpResponse == 'undefined') {
+		            	that.emit('error', new gutil.PluginError(PLUGIN_NAME, 'Upload failed'));
+		            	callback();
+		            	return;
+		          	} else if (httpResponse.statusCode !== 200) {
+		            	that.emit('error', new gutil.PluginError(PLUGIN_NAME, 'Upload failed: ', 
+		            				httpResponse.statusCode + ' - ' + httpResponse.statusMessage));
+		            	callback();
+		            	return;
+		          	}
+		          	gutil.log(PLUGIN_NAME, gutil.colors.green('CRX Package uploaded successfully'));
+		          	callback();
+	        	});
+	      	} else {
+	        	callback();
+	      	}
+	    });
 	}
 
 	/*****************************
@@ -166,12 +217,12 @@ module.exports = function (options) {
     /**
      * Generates a section of the client library (JS or CSS), creating a js.txt or css.txt.
      * @param name i.e. 'js' or 'css'
-     * @param clientlibRootDir
+     * @param clientlibFolderLocation
      * @param fileList
      */
-     function generateClientLibrarySection(name, clientlibRootDir, fileList) {
-     	var destFilePaths = [];
-    	var sectionDir = fs.mkdirsSync(path.join(clientlibRootDir, '/', name));
+    function generateClientLibrarySection(name, clientlibFolderLocation, fileList) {
+ 		var destFilePaths = [];
+    	var sectionDir = fs.mkdirsSync(path.join(clientlibFolderLocation, '/', name));
 
 		fileList.forEach(function(file) {
 			var relativePath = file.relative;
@@ -181,14 +232,90 @@ module.exports = function (options) {
 		});
 
 		// create .txt file
-	    fs.outputFileSync(path.join(sectionDir, name + '.txt'),
+	    fs.outputFileSync(path.join(clientlibFolderLocation, name + '.txt'),
                   "#base=".concat(name).concat('\n')
                   .concat(destFilePaths.join('\n')));
-     }
+    }
+
+    /**
+     * Zips a set of directories and its contents using node-archiver.
+     * @param directories
+     * @param dest
+     * @param zipCallback
+     */
+    function zipDirectory(directories, dest, callback) {
+      	var archive = archiver.create('zip', {gzip: false});
+
+	    // Where to write the file
+	    var destStream = fs.createWriteStream(dest);
+
+	    archive.on('error', function(err) {
+	        this.emit('error', new gutil.PluginError(PLUGIN_NAME, 'Archiving failed', err));
+	    });
+
+      	archive.on('entry', function(file) {
+    	    // do nothing
+	  	});
+
+      	destStream.on('error', function(err) {
+	        this.emit('error', new gutil.PluginError(PLUGIN_NAME, 'WriteStream failed', err));
+	    });
+
+	    destStream.on('close', function() {
+	    	var size = archive.pointer();
+	        gutil.log(PLUGIN_NAME, gutil.colors.green('Created ' + dest + ' (' + size + ' bytes)'));
+	        callback();
+	    });
+
+      	archive.pipe(destStream);
+
+  		directories.forEach(function(directory) {
+	        if (fs.lstatSync(directory.src).isDirectory()) {
+	          archive.directory(directory.src, directory.dest);
+	        } else {
+	          this.emit('error', new gutil.PluginError(PLUGIN_NAME, directory.src + ' is not a valid directory'));
+	          return;
+	        }
+      	});
+
+      	archive.finalize();
+    }
 
 	function isFileInPath(file, path) {
 		return fs.realpathSync(file.path).indexOf(path) == 0;
 	}
+
+    /**
+     * Installs a CRX package via an HTTP POST (basic authentication)
+     * to an AEM instance.
+     * @param zipFileLocation
+     * @param callback
+     */
+    function installPackage(zipFileLocation, callback) {
+  		var formData = {
+        	'file': fs.createReadStream(zipFileLocation),
+        	'force': 'true',
+        	'install': 'true',
+      	};
+
+      	var postUri = uri()
+        	.scheme(options.deployScheme)
+        	.host(options.deployHost)
+        	.port(options.deployPort)
+        	.path('/crx/packmgr/service.jsp');
+
+      	gutil.log(PLUGIN_NAME, 'Installing CRX package to ' + postUri.toString());
+
+      	request.post({
+          	url: postUri.toString(),
+          	formData: formData,
+          	headers: {
+            	'Authorization': 'Basic ' +
+                	new Buffer(options.deployUsername + ':' +
+                           options.deployPassword).toString('base64')
+          	}
+    	}, callback);
+    }
 
 	return through.obj(bufferContents, endStream);
 };

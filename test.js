@@ -56,13 +56,74 @@ describe('gulp-clientlibify', function() {
 		  });
 	});
 
-  it('should process all files', function (done) {
+  it('should create a CRX package with default options', function (done) {
       gulp.src('fixtures/**/*')
         .pipe(clientlibify({
 		  	   cssDir: 'fixtures/styles',
 		  	   jsDir: 'fixtures/scripts'
 		    }))
-        .pipe(assert.length(17))
         .pipe(assert.end(done));
 	});
+
+  it('should create a CRX package with custom options', function (done) {
+      gulp.src('fixtures/**/*')
+        .pipe(clientlibify({
+          cssDir: 'fixtures/styles',
+          jsDir: 'fixtures/scripts',
+          categories: ['styleguide'],
+          embed: [],
+          dependencies: ['cq-jquery'],
+          packageName: 'aem-styleguide',
+          packageVersion: '2.1',
+          packageGroup: 'My Company',
+          packageDescription: 'This package contains our mighty styleguide!'
+        }))
+        .pipe(assert.end(done));
+  });
+
+  it('should create a CRX package with a CSS only clientlib', function (done) {
+      gulp.src('fixtures/**/*')
+        .pipe(clientlibify({
+          cssDir: 'fixtures/styles',
+          packageName: 'css-styleguide'
+        }))
+        .pipe(assert.end(done));
+  });
+
+  it('should create a CRX package with a JS only clientlib', function (done) {
+      gulp.src('fixtures/**/*')
+        .pipe(clientlibify({
+          jsDir: 'fixtures/scripts',
+          packageName: 'js-styleguide'
+        }))
+        .pipe(assert.end(done));
+  });
+
+  it('should create a CRX package with extra assets', function (done) {
+      gulp.src('fixtures/**/*')
+        .pipe(clientlibify({
+            cssDir: 'fixtures/styles',
+            jsDir: 'fixtures/scripts',
+            assetsDirs: ['fixtures/favicon.ico', 'fixtures/img'],
+            packageName: 'extra-assets'
+        }))
+        .pipe(assert.end(done));
+  });
+
+  it('should deploy a CRX package to a local AEM instance', function (done) {
+      this.timeout(3000);
+      gulp.src('fixtures/**/*')
+        .pipe(clientlibify({
+            cssDir: 'fixtures/styles',
+            jsDir: 'fixtures/scripts',
+            installPackage: true,
+            packageName: 'deploy-clientlibify',
+            deployScheme: 'http',
+            deployHost: 'localhost',
+            deployPort: '4502',
+            deployUsername: 'admin',
+            deployPassword: 'admin'
+        }))
+        .pipe(assert.end(done));
+  });
 });
