@@ -1,0 +1,16 @@
+{
+  "name": "clientlibify-client",
+  "version": "1.0.0",
+  "description": "Sample project to demonstrate using the gulp-clientlibify plugin",
+  "author": {
+    "name": "Michael Leroy",
+    "email": "mickjleroy@gmail.com"
+  },
+  "devDependencies": {
+    "del": "^2.2.1",
+    "gulp": "^3.8.7",
+    "gulp-concat": "^2.6.0",
+    "gulp-ruby-sass": "^2.0.6",
+    "gulp-util": "^3.0.7"
+  }
+}

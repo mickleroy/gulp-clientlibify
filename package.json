@@ -25,22 +25,20 @@
     "gulp-util": "^3.0.0",
     "object-assign": "^4.0.1",
     "parents": "^1.0.0",
-    "plur": "^2.1.0",
-    "through2": "^2.0.0"
-  },
-  "devDependencies": {
+    "through2": "^2.0.0",
     "archiver": "^1.0.1",
     "fs-extra": "^0.30.0",
+    "request": "^2.74.0",
+    "tmp": "0.0.28",
+    "underscore": "^1.8.3",
+    "urijs": "^1.18.1"
+  },
+  "devDependencies": {
     "gulp": "^3.8.7",
     "gulp-debug": "^2.1.2",
     "mocha": "2.5.3",
     "path-exists": "^2.0.0",
-    "request": "^2.74.0",
     "should": "^5.0.0",
-    "stream-assert": "^2.0.1",
-    "string-template": "^1.0.0",
-    "tmp": "0.0.28",
-    "underscore": "^1.8.3",
-    "urijs": "^1.18.1"
+    "stream-assert": "^2.0.1"
   }
 }
