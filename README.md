@@ -216,7 +216,7 @@ gulp.task('clientlibify', function() {
 });
 ```
 
-Check out the [sample project](https://github.com/mickleroy/gulp-clientlibify/sample-project) for more information.
+Check out the [sample project](https://github.com/mickleroy/gulp-clientlibify/tree/master/sample-project) for more information.
 
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality.
