@@ -19,6 +19,10 @@
   ],
   "keywords": [
     "gulpplugin"
+    "aem",
+    "crx",
+    "cq",
+    "clientlib"
   ],
   "dependencies": {
     "chalk": "^1.0.0",

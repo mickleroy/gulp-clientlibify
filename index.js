@@ -91,7 +91,7 @@ module.exports = function (options) {
 			return;
 		}
 
-		if(cssPath && (path.extname(file.relative) == '.css' || 
+		if(cssPath && (path.extname(file.relative) == '.css' ||
 			path.extname(file.relative) == '.less') && isFileInPath(file, cssPath)) {
 			cssFiles.push(file);
 		}
@@ -196,7 +196,7 @@ module.exports = function (options) {
 		            	callback();
 		            	return;
 		          	} else if (httpResponse.statusCode !== 200) {
-		            	that.emit('error', new gutil.PluginError(PLUGIN_NAME, 'Upload failed: ', 
+		            	that.emit('error', new gutil.PluginError(PLUGIN_NAME, 'Upload failed: ',
 		            				httpResponse.statusCode + ' - ' + httpResponse.statusMessage));
 		            	callback();
 		            	return;
