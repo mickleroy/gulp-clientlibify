@@ -10,6 +10,8 @@ var path         = require('path');
 var should       = require('should');
 var debug        = require('gulp-debug');
 
+require('mocha');
+
 describe('gulp-clientlibify', function() {
     before(function () {
         gutil.log('gulp-clientlibify:', 'started running test');
