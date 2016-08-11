@@ -110,7 +110,9 @@ describe('gulp-clientlibify', function() {
         .pipe(assert.end(done));
     });
 
-    it('should deploy a CRX package to a local AEM instance', function (done) {
+
+    // only enable this test if local AEM instance is available
+    it.skip('should deploy a CRX package to a local AEM instance', function (done) {
         this.timeout(3000);
         gulp.src('fixtures/**/*')
         .pipe(clientlibify({
