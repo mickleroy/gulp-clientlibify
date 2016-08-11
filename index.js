@@ -12,8 +12,6 @@ var path     = require('path');
 var gutil    = require('gulp-util');
 var through  = require('through2');
 var assign   = require('object-assign');
-var chalk    = require('chalk');
-var plur     = require('plur');
 var fs       = require('fs-extra');
 var tmp      = require('tmp');
 var _        = require('underscore');
@@ -71,7 +69,7 @@ module.exports = function (options) {
     }
 
     if(options.jsDir && !fs.lstatSync(options.jsDir).isDirectory()) {
-      	throw new gutil.PluginError(PLUGIN_NAME, options.jsDir + ' is not a directory');
+ 		throw new gutil.PluginError(PLUGIN_NAME, options.jsDir + ' is not a directory');
     }
 
 	var cssFiles = [];

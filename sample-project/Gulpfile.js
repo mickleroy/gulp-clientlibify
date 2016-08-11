@@ -5,7 +5,7 @@ var del          = require('del');
 var sass         = require('gulp-ruby-sass');
 var gutil        = require('gulp-util');
 var concat       = require('gulp-concat');
-var clientlibify = require('../');
+var clientlibify = require('gulp-clientlibify');
 
 gulp.task('clean', function() {
   	return del(['dist/scripts', 'dist/styles', 'dist/images', 'dist/*.zip']);
