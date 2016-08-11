@@ -8,7 +8,7 @@ var concat       = require('gulp-concat');
 var clientlibify = require('gulp-clientlibify');
 
 gulp.task('clean', function() {
-  	return del(['dist/scripts', 'dist/styles', 'dist/images', 'dist/*.zip']);
+    return del(['dist/scripts', 'dist/styles', 'dist/images', 'dist/*.zip']);
 });
 
 gulp.task('scripts', function() {
@@ -18,46 +18,46 @@ gulp.task('scripts', function() {
 });
 
 gulp.task('styles', function() {
-	return sass('assets/styles/base.scss')
-		.pipe(gulp.dest('dist/styles'));
+    return sass('assets/styles/base.scss')
+        .pipe(gulp.dest('dist/styles'));
 });
 
 gulp.task('images', function() {
-	return gulp.src('assets/images/**/*')
-		.pipe(gutil.noop())
-		.pipe(gulp.dest('dist/images'));
+    return gulp.src('assets/images/**/*')
+        .pipe(gutil.noop())
+        .pipe(gulp.dest('dist/images'));
 })
 
 gulp.task('clientlibify', ['scripts', 'styles', 'images'], function() {
-	return gulp.src('dist/**/*')
-		.pipe(clientlibify({
-			dest: 'dist',
-	        cssDir: 'dist/styles',
-	        jsDir: 'dist/scripts',
-	        assetsDirs: ['dist/images'],
+    return gulp.src('dist/**/*')
+        .pipe(clientlibify({
+            dest: 'dist',
+            cssDir: 'dist/styles',
+            jsDir: 'dist/scripts',
+            assetsDirs: ['dist/images'],
 
-	        // set `installPackage` to `true` to deploy to an AEM instance
-	        installPackage: false,
+            // set `installPackage` to `true` to deploy to an AEM instance
+            installPackage: false,
 
-	        categories: ['awesome-styleguide'],
-	        embed: [],
-	        dependencies: ['cq-jquery'],
+            categories: ['awesome-styleguide'],
+            embed: [],
+            dependencies: ['cq-jquery'],
 
-	        // package options
-	        packageName: 'prickly-pear',
-	        packageVersion: '2.1',
-	        packageGroup: 'My Company',
-	        packageDescription: 'CRX package installed using the gulp-clientlibify plugin',
+            // package options
+            packageName: 'prickly-pear',
+            packageVersion: '2.1',
+            packageGroup: 'My Company',
+            packageDescription: 'CRX package installed using the gulp-clientlibify plugin',
 
-	        // deploy options
-	        // Note: these options would likely come from environment vars
-	        deployScheme: 'http',
-	        deployHost: 'localhost',
-	        deployPort: '4502',
-	        deployUsername: 'admin',
-	        deployPassword: 'admin'
-	    }))
-	    .pipe(gulp.dest('dist'))
+            // deploy options
+            // Note: these options would likely come from environment vars
+            deployScheme: 'http',
+            deployHost: 'localhost',
+            deployPort: '4502',
+            deployUsername: 'admin',
+            deployPassword: 'admin'
+        }))
+        .pipe(gulp.dest('dist'))
 });
 
 gulp.task('default', ['clean', 'clientlibify']);
