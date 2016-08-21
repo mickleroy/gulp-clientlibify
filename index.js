@@ -193,7 +193,7 @@ module.exports = function (options) {
                         callback();
                         return;
                     } else if (httpResponse.statusCode !== 200) {
-                        that.emit('error', new gutil.PluginError(PLUGIN_NAME, 'Upload failed: ',
+                        that.emit('error', new gutil.PluginError(PLUGIN_NAME, 'Upload failed: ' +
                                     httpResponse.statusCode + ' - ' + httpResponse.statusMessage));
                         callback();
                         return;
