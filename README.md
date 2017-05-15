@@ -35,7 +35,7 @@ In your project's Gulpfile, add a task and pipe your assets to the `clientlibify
 
 ```js
 gulp.task('clientlibify', function() {
-    return gulp.src(assets/**/*)
+    return gulp.src('assets/**/*')
         .pipe(clientlibify({
             //options go here
         }))
@@ -184,7 +184,7 @@ will be name `clientlibify-1.0.zip` and is ready to be installed on an AEM insta
 
 ```js
 gulp.task('clientlibify', function() {
-    return gulp.src(assets/**/*)
+    return gulp.src('assets/**/*')
         .pipe(clientlibify({
             cssDir: 'assets/styles/css'
         }))
@@ -202,7 +202,7 @@ provided in the `options.deploy*` configuration.
 
 ```js
 gulp.task('clientlibify', function() {
-    return gulp.src(assets/**/*)
+    return gulp.src('assets/**/*')
         .pipe(clientlibify({
             dest: 'dist',
             cssDir: 'assets/styles/css',
