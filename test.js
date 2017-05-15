@@ -4,7 +4,6 @@ var clientlibify = require('./');
 var assert       = require('stream-assert');
 var fs           = require('fs');
 var gutil        = require('gulp-util');
-var pathExists   = require('path-exists');
 var gulp         = require('gulp');
 var path         = require('path');
 var should       = require('should');
@@ -112,6 +111,18 @@ describe('gulp-clientlibify', function() {
         .pipe(assert.end(done));
     });
 
+    it('should create a CRX package with custom processors', function (done) {
+        gulp.src('fixtures/**/*')
+            .pipe(clientlibify({
+                cssDir: 'fixtures/styles',
+                jsDir: 'fixtures/scripts',
+                categories: ['styleguide'],
+                jsProcessor: ['min:gcc'],
+                cssProcessor: ['default:none'],
+                packageName: 'processors'
+            }))
+            .pipe(assert.end(done));
+    });
 
     // only enable this test if local AEM instance is available
     it.skip('should deploy a CRX package to a local AEM instance', function (done) {

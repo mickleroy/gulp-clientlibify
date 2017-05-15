@@ -41,6 +41,8 @@ module.exports = function (options) {
         categories: ['etc-clientlibify'],
         embed: [],
         dependencies: [],
+        jsProcessor: [],
+        cssProcessor: [],
         packageName: 'clientlibify',
         packageVersion: '1.0',
         packageGroup: 'my_packages',

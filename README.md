@@ -98,6 +98,20 @@ Default value: `[]`
 
 An array of string values that will be used as the clientlib dependencies.
 
+#### options.jsProcessor
+Type: `Array`
+Default value: `[]`
+
+An array of string values that will be used as the clientlib js processors (i.e. "min:gcc")
+> Requires AEM 6.2 or above
+
+#### options.cssProcessor
+Type: `Array`
+Default value: `[]`
+
+An array of string values that will be used as the clientlib css processors (i.e. "min:none")
+> Requires AEM 6.2 or above
+
 ### CRX Package Options
 
 #### options.packageName
@@ -170,11 +184,11 @@ will be name `clientlibify-1.0.zip` and is ready to be installed on an AEM insta
 
 ```js
 gulp.task('clientlibify', function() {
-		return gulp.src(assets/**/*)
-				.pipe(clientlibify({
-					cssDir: 'assets/styles/css'
-				}))
-				.pipe(gulp.dest('dist'))
+    return gulp.src(assets/**/*)
+                .pipe(clientlibify({
+                    cssDir: 'assets/styles/css'
+                }))
+                .pipe(gulp.dest('dist'))
 });
 ```
 
@@ -188,31 +202,33 @@ provided in the `options.deploy*` configuration.
 
 ```js
 gulp.task('clientlibify', function() {
-		return gulp.src(assets/**/*)
-				.pipe(clientlibify({
-		      dest: 'dist',
-		      cssDir: 'assets/styles/css',
-		      jsDir: 'assets/scripts',
-		      assetsDirs: ['assets/images', 'assets/fonts'],
-		      installPackage: true,
-		      categories: ['awesome-styleguide'],
-		      embed: [],
-		      dependencies: ['cq-jquery'],
-
-		      // package options
-		      packageName: 'prickly-pear',
-		      packageVersion: '2.1',
-		      packageGroup: 'My Company',
-		      packageDescription: 'CRX package installed using the gulp-clientlibify plugin',
-
-		      // deploy options
-		      deployScheme: 'http',
-		      deployHost: 'localhost',
-		      deployPort: '4502',
-		      deployUsername: 'admin',
-		      deployPassword: 'admin'
-		    }))
-				.pipe(gulp.dest('dist'))
+    return gulp.src(assets/**/*)
+        .pipe(clientlibify({
+            dest: 'dist',
+            cssDir: 'assets/styles/css',
+            jsDir: 'assets/scripts',
+            assetsDirs: ['assets/images', 'assets/fonts'],
+            installPackage: true,
+            categories: ['awesome-styleguide'],
+            embed: [],
+            dependencies: ['cq-jquery'],
+            jsProcessor: ['min:gcc'],
+            cssProcessor: ['min:none'],
+            
+            // package options
+            packageName: 'prickly-pear',
+            packageVersion: '2.1',
+            packageGroup: 'My Company',
+            packageDescription: 'CRX package installed using the gulp-clientlibify plugin',
+            
+            // deploy options
+            deployScheme: 'http',
+            deployHost: 'localhost',
+            deployPort: '4502',
+            deployUsername: 'admin',
+            deployPassword: 'admin'
+        }))
+        .pipe(gulp.dest('dist'))
 });
 ```
 
@@ -220,6 +236,3 @@ Check out the [sample project](https://github.com/mickleroy/gulp-clientlibify/tr
 
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality.
-
-## Release History
-n/a
