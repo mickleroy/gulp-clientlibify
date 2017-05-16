@@ -4,5 +4,5 @@
         categories="[<%= categories.join(',') %>]"
         embed="[<%= embed.join(',') %>]"
         dependencies="[<%= dependencies.join(',') %>]"
-        jsProcessor="[<%= jsProcessor %>]"
-        cssProcessor="[<%= cssProcessor %>]"/>
+        jsProcessor="[<%= jsProcessor.join(',') %>]"
+        cssProcessor="[<%= cssProcessor.join(',') %>]"/>

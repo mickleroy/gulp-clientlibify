@@ -1,6 +1,6 @@
 {
   "name": "gulp-clientlibify",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Integrate AEM with a styleguide",
   "license": "MIT",
   "repository": "mickleroy/gulp-clientlibify",

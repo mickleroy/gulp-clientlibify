@@ -1,3 +1,6 @@
+### 0.4.1
+* Bug fix for processor options with multiple values
+
 ### 0.4.0 
 * Introduced `jsProcessor` and `cssProcessor` options (requires AEM 6.2 or above)
 
