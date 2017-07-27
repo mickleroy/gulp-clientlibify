@@ -43,6 +43,7 @@ module.exports = function (options) {
         dependencies: [],
         jsProcessor: [],
         cssProcessor: [],
+        allowProxy: false,
         packageName: 'clientlibify',
         packageVersion: '1.0',
         packageGroup: 'my_packages',

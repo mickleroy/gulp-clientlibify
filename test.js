@@ -124,6 +124,18 @@ describe('gulp-clientlibify', function() {
             .pipe(assert.end(done));
     });
 
+    it('should create a CRX package with allow proxy', function (done) {
+        gulp.src('fixtures/**/*')
+            .pipe(clientlibify({
+                cssDir: 'fixtures/styles',
+                jsDir: 'fixtures/scripts',
+                categories: ['styleguide'],
+                allowProxy: true,
+                packageName: 'allowproxy'
+            }))
+            .pipe(assert.end(done));
+    });
+
     // only enable this test if local AEM instance is available
     it.skip('should deploy a CRX package to a local AEM instance', function (done) {
         this.timeout(3000);

@@ -112,6 +112,13 @@ Default value: `[]`
 An array of string values that will be used as the clientlib css processors (i.e. "min:none")
 > Requires AEM 6.2 or above
 
+#### options.allowProxy
+Type: `Boolean`
+Default value: `false`
+
+A boolean determining if the client library should be accessible via the proxy servlet
+> Requires AEM 6.3 or above
+
 ### CRX Package Options
 
 #### options.packageName
@@ -214,6 +221,7 @@ gulp.task('clientlibify', function() {
             dependencies: ['cq-jquery'],
             jsProcessor: ['min:gcc'],
             cssProcessor: ['min:none'],
+            allowProxy: false,
             
             // package options
             packageName: 'prickly-pear',
